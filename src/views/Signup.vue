@@ -22,11 +22,13 @@
         <span v-if="errors.password" class="error">{{ errors.password }}</span>
   
         <button type="submit">Signup</button>
+
+        <hr style="margin: 20px 0; color: white;" />
+  
+        <button type="button" @click="continueAsGuest">Continue as Guest</button>
       </form>
   
-      <hr style="margin: 20px 0" />
-  
-      <button type="button" @click="continueAsGuest">Continue as Guest</button>
+
     </div>
   </template>
   
@@ -166,57 +168,63 @@
     margin: 4px 0 12px;
   }
   
-  .title {
-    color: blue;
-    margin: auto;
-    padding-bottom: 50px;
-    text-decoration: underline;
-  }
   
-  .login {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    padding: 20px;
-    box-sizing: border-box;
-    background-color: #f9f9f9;
-  }
-  
-  .login form {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    max-width: 400px;
-    padding: 30px;
-    border: 2px solid #ccc;
-    border-radius: 8px;
-    background-color: white;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  }
-  
-  .login input {
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    font-size: 1rem;
-  }
-  
-  .login button {
-    padding: 10px;
-    margin-top: 10px;
-    font-size: 1rem;
-    border: none;
-    background-color: #2c3e50;
-    color: white;
-    cursor: pointer;
-    border-radius: 4px;
-  }
-  
-  .login button:hover {
-    background-color: #1a242f;
-  }
+.login {
+  display: flex;
+  justify-content: center;   /* Centers content horizontally */
+  align-items: center;       /* Centers content vertically */
+  height: 100vh;             /* Full viewport height */
+  width: 100vw;              /* Full viewport width */
+  color : white;
+}
+
+/* Styling for the form inside the login container */
+.login form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;   /* Center form elements vertically */
+  align-items: center;       /* Center form elements horizontally */
+  padding: 20px;             /* Add padding inside the form */
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 400px;          /* Limit form width to make it look better on large screens */
+}
+
+/* Input fields styling */
+.login input {
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  width: 100%;  /* Ensure the inputs take full width inside the form */
+}
+
+/* Button styling */
+.login button {
+  padding: 10px;
+  margin-top: 10px;
+  font-size: 1rem;
+  border: none;
+  background-color: #2c3e50;
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+  width: 100%;  /* Make the button stretch to full width inside the form */
+}
+
+/* Hover effect on the button */
+.login button:hover {
+  background-color: #1a242f;
+}
+
+/* Paragraph styling */
+.login p {
+  margin-top: 15px;
+  font-size: 0.95rem;
+}
+
   </style>
   

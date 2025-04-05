@@ -113,7 +113,6 @@
     height: 130px;
     object-fit: cover;
     border-radius: 8px;
-    background-color: #000;
   }
   </style>
   
