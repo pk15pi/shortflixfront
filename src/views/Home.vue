@@ -3,58 +3,83 @@
     <div class="header">
       <h2 class="welcome">Welcome, {{ auth.name }}</h2>
       <div>
-        <button @click="goToLogin">Hot</button>
-        <button @click="goToLogin">New Arrivals</button>
-        <button @click="goToLogin">Romantic</button>
-        <button @click="goToLogin">Most Viewed</button>
-        <button @click="goToLogin">Most Starred</button>
+        <button @click="fetchVideos('hot')">Hot</button>
+        <button @click="fetchVideos('new')">New Arrivals</button>
+        <button @click="fetchVideos('romantic')">Romantic</button>
+        <button @click="fetchVideos('most_viewed')">Most Viewed</button>
+        <button @click="fetchVideos('most_starred')">Most Starred</button>
         <button v-if="isGuest" @click="goToLogin">Login</button>
         <button v-if="isGuest" @click="goToSignup">Signup</button>
       </div>
-      
-      <!-- Toggle Button for Day/Night mode -->
-      <button @click="toggleTheme" class="theme-toggle-btn">
-        Toggle Theme
-      </button>
+
+      <button @click="toggleTheme" class="theme-toggle-btn">Toggle Theme</button>
     </div>
 
     <div class="thumbnails">
-      <VideoList />
+      <VideoList
+      :videos="videos"
+      :next="next"
+      :previous="previous"
+      :totalPages="totalPages"
+      :currentPage="currentPage"
+      @paginate="handlePagination"
+      />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../store/auth'
+import axios from 'axios'
 import VideoList from '../components/VideoList.vue'
 
+const next = ref(null)
+const previous = ref(null)
 const router = useRouter()
 const auth = useAuthStore()
+const videos = ref([])
+const totalPages = ref(1)
+const currentPage = ref(1)
 
-// Store theme state (light/dark mode)
-const isDarkMode = ref(true) // default is dark mode
-
-// Computed property to add appropriate classes for theme
-const themeClass = computed(() => {
-  return isDarkMode.value ? 'dark-theme' : 'light-theme'
-})
-
+const isDarkMode = ref(true)
+const themeClass = computed(() => (isDarkMode.value ? 'dark-theme' : 'light-theme'))
 const isGuest = computed(() => auth.username === 'Guest')
 
-const goToLogin = () => {
-  router.push('/login')
+const goToLogin = () => router.push('/login')
+const goToSignup = () => router.push('/signup')
+const toggleTheme = () => (isDarkMode.value = !isDarkMode.value)
+
+
+// Fetch videos based on category
+const fetchVideos = async (category = '', page = 1) => {
+
+  videos.value = ''
+    next.value = ''
+    previous.value = ''
+    totalPages.value = ''
+    currentPage.value = ''
+  try {
+    const response = await axios.get(`http://localhost:8000/api/videos/?keyword=${category}&page=${page}`)
+    videos.value = response.data.results
+    next.value = response.data.next
+    previous.value = response.data.previous
+    totalPages.value = response.data.total_pages
+    currentPage.value = response.data.current_page
+  } catch (err) {
+    console.error('Error fetching videos:', err)
+  }
 }
 
-const goToSignup = () => {
-  router.push('/signup')
+const handlePagination = (pageNumber) => {
+  fetchVideos(pageNumber)
 }
 
-// Toggle between dark and light theme
-const toggleTheme = () => {
-  isDarkMode.value = !isDarkMode.value
-}
+// Load default videos on mount (e.g. 'hot' by default)
+onMounted(() => {
+  fetchVideos('hot')
+})
 </script>
 
 <style scoped>

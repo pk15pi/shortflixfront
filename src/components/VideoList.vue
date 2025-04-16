@@ -1,80 +1,123 @@
 <template>
-    <div class="video-list-page">
-      <!-- Large Video Player -->
-      <div v-if="selectedVideo" class="main-player-container">
-        <h2>{{ selectedVideo.title }}</h2>
+  <div class="video-list-page">
+    <div v-if="selectedVideo" class="main-player-container">
+      <h2>{{ selectedVideo.title }}</h2>
+      <video
+        ref="mainVideoRef"
+        :src="selectedVideo.file"
+        controls
+        autoplay
+        class="main-video"
+      />
+    </div>
+
+    <div class="thumbnails-container">
+      <div
+        v-for="video in videos"
+        :key="video.id"
+        class="video-thumb"
+        @click="selectVideo(video)"
+      >
         <video
-          ref="mainVideoRef"
-          :src="selectedVideo.file"
-          controls
-          autoplay
-          class="main-video"
+          :src="video.file"
+          muted
+          loop
+          preload="metadata"
+          playsinline
+          class="thumbnail-preview"
         />
-      </div>
-  
-      <!-- Video Thumbnails -->
-      <div class="thumbnails-container">
-        <div
-          v-for="video in videos"
-          :key="video.id"
-          class="video-thumb"
-          @click="selectVideo(video)"
-        >
-          <video
-            :src="video.file"
-            muted
-            loop
-            preload="metadata"
-            playsinline
-            class="thumbnail-preview"
-          />
-          <p>{{ video.title }}</p>
-        </div>
+        <p>{{ video.title }}</p>
       </div>
     </div>
-  </template>
-  
-  <script setup>
-  import { ref, onMounted } from 'vue'
-  import axios from 'axios'
-  
-  const videos = ref([])
-  const selectedVideo = ref(null)
-  const mainVideoRef = ref(null)
-  
-  const fetchVideos = async () => {
-    try {
-      const response = await axios.get('http://localhost:8000/api/videos/')
-      videos.value = response.data
-    } catch (err) {
-      console.error('Error loading videos:', err)
+
+    <!-- Pagination Controls -->
+<!-- ✅ Correct -->
+    <button :disabled="!previous" @click="$emit('paginate', currentPage - 1)">Previous</button>
+
+    <button
+      v-for="page in totalPages"
+      :key="page"
+      :class="{ active: page === currentPage }"
+      @click="$emit('paginate', page)"
+    >
+      {{ page }}
+    </button>
+
+    <button :disabled="!next" @click="$emit('paginate', currentPage + 1)">Next</button>
+
+  </div>
+</template>
+
+<script setup>
+import { ref, watch, nextTick } from 'vue'
+const props = defineProps({
+  videos: Array,
+  next: String,
+  previous: String,
+  currentPage: Number,
+  totalPages: Number
+})
+
+
+
+const selectedVideo = ref(null)
+const mainVideoRef = ref(null)
+
+const selectVideo = (video) => {
+  selectedVideo.value = video
+  nextTick(() => {
+    mainVideoRef.value?.play().catch(() => {})
+  })
+}
+
+watch(
+  () => props.videos,
+  (newVideos) => {
+    if (newVideos?.length) {
+      selectedVideo.value = newVideos[0]
+    } else {
+      selectedVideo.value = null
     }
+  },
+  { immediate: true }
+)
+</script>
+
+
+<style scoped>
+  .pagination {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
   }
-  
-  const selectVideo = (video) => {
-    selectedVideo.value = video
-  
-    // Autoplay on select (in case autoplay is blocked by browser policy)
-    nextTick(() => {
-      const player = mainVideoRef.value
-      if (player) {
-        player.play().catch(() => {
-          // some browsers require user interaction
-        })
-      }
-    })
+
+  .pagination button {
+    padding: 8px 14px;
+    background-color: #409eff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
   }
-  
-  onMounted(fetchVideos)
-  </script>
-  
-  <style scoped>
+
+  .pagination button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+
+  .pagination button.active {
+    background-color: #1d8bf1;
+    font-weight: bold;
+    transform: scale(1.1);
+  }
+
   .video-list-page {
     padding: 20px;
     max-width: 100%;
     margin: auto;
   }
-  
+
   .main-player-container {
     margin-bottom: 30px;
     text-align: center;
@@ -88,16 +131,16 @@
   }
   
   .thumbnails-container {
-    display: flex;
+  display: flex;
     flex-wrap: wrap;
     gap: 16px;
-    justify-content: center;
+  justify-content: center;
     color : white;
   }
   
   .video-thumb {
     width: 220px;
-    cursor: pointer;
+  cursor: pointer;
     text-align: center;
     border: 2px solid transparent;
     transition: all 0.3s ease;
@@ -113,6 +156,6 @@
     height: 130px;
     object-fit: cover;
     border-radius: 8px;
-  }
-  </style>
-  
+}
+
+</style>
