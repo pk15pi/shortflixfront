@@ -29,11 +29,11 @@
         <p>{{ video.title }}</p>
       </div>
     </div>
+  </div>
 
+  <div class="pagination">
     <!-- Pagination Controls -->
-<!-- ✅ Correct -->
     <button :disabled="!previous" @click="$emit('paginate', currentPage - 1)">Previous</button>
-
     <button
       v-for="page in totalPages"
       :key="page"
@@ -42,9 +42,7 @@
     >
       {{ page }}
     </button>
-
     <button :disabled="!next" @click="$emit('paginate', currentPage + 1)">Next</button>
-
   </div>
 </template>
 
@@ -86,7 +84,7 @@ watch(
 
 <style scoped>
   .pagination {
-    margin-top: 20px;
+    margin: auto;
     display: flex;
     justify-content: center;
     gap: 10px;
@@ -99,6 +97,7 @@ watch(
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    align-content: center;
   }
 
   .pagination button:disabled {
@@ -131,19 +130,21 @@ watch(
   }
   
   .thumbnails-container {
-  display: flex;
+    display: flex;
     flex-wrap: wrap;
     gap: 16px;
-  justify-content: center;
+    justify-content: center;
     color : white;
   }
   
   .video-thumb {
     width: 220px;
-  cursor: pointer;
+    cursor: pointer;
     text-align: center;
     border: 2px solid transparent;
     transition: all 0.3s ease;
+    border: thistle, solid;
+    border-radius:5px;
   }
   
   .video-thumb:hover {
